@@ -1,4 +1,4 @@
-#connection-tester
+# Connection-Tester
 A simple PowerShell script for monitoring local router and Internet connectivity.
 
 The script periodically checks:
