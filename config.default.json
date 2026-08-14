@@ -1,0 +1,8 @@
+{
+    "RouterInterface": "Ethernet",
+    "InternetHost": "1.1.1.1",
+    "IntervalSeconds": 5,
+    "HistorySize": 20,
+    "MaxRouterResponseTime": 100,
+    "MaxInternetResponseTime": 100
+}
