@@ -25,8 +25,8 @@ while ($true) {
         $null = $history.Dequeue()
     }
 
-    if ($result.Router -eq "Connection Lost" -or 
-        $result.Internet -eq "Connection Lost" -or
+    if (-not $routerPing -or 
+        -not $internetPing -or
         $routerPing.ResponseTime -ge $config.MaxRouterResponseTime -or
         $internetPing.ResponseTime -ge $config.MaxInternetResponseTime) {
 
