@@ -1,5 +1,5 @@
 # Connection-Tester
-A simple PowerShell script for monitoring local router and Internet connectivity.
+A simple PowerShell 5.1 script for monitoring local router and Internet connectivity.
 
 The script periodically checks:
 - connectivity to the default gateway
