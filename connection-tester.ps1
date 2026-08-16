@@ -1,6 +1,18 @@
 $config = Get-Content -Path "$PSScriptRoot\config.json" -Raw | ConvertFrom-Json
 
+$interface = Get-NetIPInterface -InterfaceAlias $config.RouterInterface -ErrorAction SilentlyContinue
+
+if (-not $interface) {
+    Write-Host "[$(Get-Date -Format "yyyy-MM-dd HH:mm:ss")] Network interface '$($config.RouterInterface)' was not found." -ForegroundColor Red
+    exit 1
+}
+
 $router = (Get-NetIPConfiguration -InterfaceAlias $config.RouterInterface).IPv4DefaultGateway.NextHop
+
+if (-not $router) {
+    Write-Host "[$(Get-Date -Format "yyyy-MM-dd HH:mm:ss")] Could not determine the default gateway for interface '$($config.RouterInterface)'." -ForegroundColor Red
+    exit 1
+}
 
 $history = [System.Collections.Generic.Queue[object]]::new()
 
@@ -30,18 +42,22 @@ while ($true) {
         $routerPing.ResponseTime -ge $config.MaxRouterResponseTime -or
         $internetPing.ResponseTime -ge $config.MaxInternetResponseTime) {
 
+        $date = Get-Date -Format 'yyyy-MM-dd'
+
         if (-not (Test-Path $logPath)) {
             New-Item -Path $logPath -ItemType Directory -Force | Out-Null
         }
 
-        $csvPath = "$logPath\logs_$(Get-Date -Format 'yyyy-MM-dd').csv"
+        $logFile = "$logPath\logs_$date.log"
 
-        if (Test-Path $csvPath) {
-            $result | Export-Csv -Path $csvPath -NoTypeInformation -Append -Encoding UTF8
+        if (-not (Test-Path $logFile)) {
+            @(
+                "Time                  Router          Router_Ping  Internet        Internet_Ping"
+                "----                  ------          -----------  --------        -------------"
+            ) | Out-File -FilePath $logFile -Encoding UTF8
         }
-        else {
-            $result | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8
-        }
+
+        "{0,-21} {1,-15} {2,-12} {3,-15} {4}" -f $result.Time, $result.Router, $result.Router_Ping, $result.Internet, $result.Internet_Ping | Out-File -FilePath $logFile -Append -Encoding  UTF8
     }
 
     Clear-Host
