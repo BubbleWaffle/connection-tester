@@ -7,4 +7,4 @@ The script periodically checks:
 - router response time
 - Internet response time
 
-The last measurements are displayed in the console, while connection problems and high response times are saved to daily CSV log files.
+The last measurements are displayed in the console, while connection problems and high response times are saved to daily log files.
